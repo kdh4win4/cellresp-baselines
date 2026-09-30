@@ -73,8 +73,75 @@ pytest -q    # synthetic-data tests, no downloads needed
 
 ## Results
 
-_Fill in after the first real run: data release labels, final cell/drug/pair
-counts, and the summary table from `results/baselines_summary_*.csv`._
+Data: GDSC2 fitted dose response `27Oct23` (release 8.5, from Cell Model
+Passports); DepMap Public `Model.csv` and
+`OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv` (DepMap Public 25Q3,
+downloaded 2026-09-30). Checksums in `data/raw/manifest.json`.
+
+### Harmonization
+
+| Step | Result |
+|---|---|
+| GDSC2 rows / cell lines / DRUG_IDs | 242,036 / 969 / 295 |
+| Cell lines matched by Sanger Model ID | 967 (1 by unique name, 1 unmatched) |
+| ID matches whose names disagree | 29, all correct on review |
+| DRUG_IDs → canonical drugs | 295 → 286 (9 names carry >1 DRUG_ID) |
+| Drugs resolved in PubChem | 238 of 295 (57 keyed by normalized name) |
+| Genes (protein-coding, Entrez-keyed) | 19,215 |
+| Cell lines with DepMap expression | 718 of 969 |
+| Final (cell, drug) pairs | 177,028 (718 × 286, density 0.86) |
+| LN_IC50 above max tested concentration | 71.8% of rows (0.3% below min) |
+
+The 29 name disagreements include `U031`/`UO31` and `786-0`/`786O` (digit
+zero vs letter O) and a dozen `NCI-H####`/`H####` prefix differences. Name-only
+matching would have silently dropped or mismatched these. The analysis set is
+restricted to the 718 cell lines with DepMap expression so that baselines and
+future expression-based models are scored on the same cells.
+
+### Baselines (5-fold mean; per-fold sd in `results/`)
+
+| Target | Split | drug_mean pooled r | additive pooled r | additive per-drug r |
+|---|---|---|---|---|
+| LN_IC50 | random | 0.843 | 0.906 | **0.650** |
+| LN_IC50 | unseen_drug | — | 0.335 | 0.651 |
+| LN_IC50 | unseen_cell | 0.844 | 0.844 | undefined |
+| AUC | random | 0.752 | 0.789 | **0.317** |
+| AUC | unseen_drug | — | 0.246 | 0.321 |
+| AUC | unseen_cell | 0.753 | 0.753 | undefined |
+| LN_IC50, measured only | random | 0.875 | 0.901 | **0.422** |
+| LN_IC50, measured only | unseen_drug | — | 0.116 | 0.376 |
+| LN_IC50, measured only | unseen_cell | 0.875 | 0.875 | undefined |
+
+### Findings
+
+1. **A model must beat per-drug r = 0.65 (LN_IC50, random split) to show it
+   has learned anything beyond general cell sensitivity.** The additive
+   baseline uses no expression and no chemistry.
+2. **Pooled correlation is dominated by drug potency.** Drug means alone give
+   pooled r = 0.84 while saying nothing about which cells respond.
+3. **Unseen cell lines are where cell features must earn their place.** Every
+   statistical baseline predicts a constant within a drug for a new cell, so
+   the effective per-drug baseline there is zero.
+4. **Unseen drugs keep within-drug ranking** (per-drug r unchanged at 0.65,
+   since cell effects are known) but lose potency calibration (pooled r 0.34,
+   large fold-to-fold variance with ~57 drugs per fold).
+5. **LN_IC50 likely overstates the baseline.** Per-drug r falls from 0.65 to
+   0.42 when extrapolated IC50s are removed, and is 0.32 on AUC. Candidate
+   explanations, not yet tested: the joint mixed-effects curve fit pulling
+   extrapolated values toward cell-level effects, and AUC saturating near 1
+   for resistant cells. Either way, results should be reported on AUC and on
+   measured-only IC50 alongside LN_IC50.
+6. **The additive correction matters when cells see different drug sets.**
+   On measured-only data, cell means give per-drug r = 0.29 versus 0.42 for
+   the additive baseline.
+
+Reproduce:
+
+```bash
+python -m cellresp.pipeline evaluate --target LN_IC50
+python -m cellresp.pipeline evaluate --target AUC
+python -m cellresp.pipeline evaluate --target LN_IC50 --measured-only
+```
 
 ## Layout
 
