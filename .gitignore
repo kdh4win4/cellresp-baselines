@@ -1,0 +1,10 @@
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+results/*
+!results/.gitkeep
+wandb/
+__pycache__/
+*.egg-info/
+.pubchem_cache.json
