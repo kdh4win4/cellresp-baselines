@@ -10,7 +10,7 @@ import pandas as pd
 GENE_COL = re.compile(r"^(?P<symbol>\S+) \((?P<entrez>\d+)\)$")
 
 GDSC_REQUIRED = [
-    "COSMIC_ID", "CELL_LINE_NAME", "SANGER_MODEL_ID", "DRUG_ID", "DRUG_NAME",
+    "CELL_LINE_NAME", "SANGER_MODEL_ID", "DRUG_ID", "DRUG_NAME",
     "MIN_CONC", "MAX_CONC", "LN_IC50", "AUC",
 ]
 MODEL_REQUIRED = ["ModelID"]
@@ -35,6 +35,9 @@ def _require(df: pd.DataFrame, cols: list[str], what: str) -> None:
 def load_gdsc(path) -> pd.DataFrame:
     df = _read_table(path)
     _require(df, GDSC_REQUIRED, "GDSC response")
+    if "COSMIC_ID" not in df.columns:
+        print("[gdsc] COSMIC_ID absent; matching by Sanger Model ID and name only")
+        df["COSMIC_ID"] = pd.NA
     return df
 
 

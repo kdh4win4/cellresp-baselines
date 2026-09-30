@@ -1,0 +1,45 @@
+{
+  "cells": {
+    "gdsc_cell_lines": 969,
+    "by_method": {
+      "sanger_id": 967,
+      "name": 1,
+      "unmatched": 1
+    },
+    "name_conflicts": 29,
+    "many_to_one_depmap_ids": 0
+  },
+  "drugs": {
+    "gdsc_drug_ids": 295,
+    "unique_drug_keys": 286,
+    "pubchem_status": {
+      "ok": 238,
+      "not_found": 57
+    },
+    "names_with_multiple_drug_ids": 9,
+    "connectivity_blocks_shared_by_different_names": 0,
+    "ambiguous_pubchem_names": 2
+  },
+  "genes": {
+    "genes": 19215,
+    "duplicate_entrez_dropped": 0,
+    "hgnc_table_used": false,
+    "no_hgnc_match": null,
+    "symbol_changed_vs_hgnc": 0
+  },
+  "assembled": {
+    "row_flow": {
+      "gdsc_rows": 242036,
+      "after_cell_mapping": 241757,
+      "after_many_to_one_removed": 241757,
+      "after_require_expression": 181921,
+      "after_nonmissing_target": 181921,
+      "final_pairs": 177028
+    },
+    "cells": 718,
+    "drugs": 286,
+    "pairs_with_replicates": 4893,
+    "fraction_extrapolated": 0.7304,
+    "matrix_density": 0.8621
+  }
+}

@@ -96,13 +96,17 @@ def summarize(by_fold: pd.DataFrame) -> pd.DataFrame:
     return out.reset_index()
 
 
-def evaluate_cmd(cfg: dict, use_wandb: bool, include_extrapolated: bool = True) -> pd.DataFrame:
-    ecfg = cfg["evaluate"]
+def evaluate_cmd(cfg: dict, use_wandb: bool, include_extrapolated: bool = True,
+                 target: str | None = None) -> pd.DataFrame:
+    ecfg = dict(cfg["evaluate"])
+    if target:
+        ecfg["target"] = target
     responses = pd.read_parquet(Path(cfg["processed_dir"]) / "responses.parquet")
-    tag = "all"
+    subset = "all"
     if not include_extrapolated:
         responses = responses[~responses["ic50_extrapolated"]]
-        tag = "measured_only"
+        subset = "measured_only"
+    tag = f"{ecfg['target']}_{subset}"
     by_fold = run_baselines(responses, ecfg)
     summary = summarize(by_fold)
     res = Path(cfg["results_dir"])
@@ -113,7 +117,7 @@ def evaluate_cmd(cfg: dict, use_wandb: bool, include_extrapolated: bool = True) 
     if use_wandb:
         import wandb
         run = wandb.init(project="cellresp-baselines", job_type="baselines",
-                         config={**ecfg, "subset": tag})
+                         config={**ecfg, "subset": subset}, name=tag)
         manifest = Path(cfg["raw_dir"]) / "manifest.json"
         if manifest.exists():
             art = wandb.Artifact("raw-data-manifest", type="dataset")
@@ -130,6 +134,8 @@ def main() -> None:
     ap.add_argument("step", choices=["harmonize", "evaluate"])
     ap.add_argument("--config", default="configs/sources.yaml")
     ap.add_argument("--wandb", action="store_true")
+    ap.add_argument("--target", choices=["LN_IC50", "AUC"], default=None,
+                    help="override evaluate.target from the config")
     ap.add_argument("--measured-only", action="store_true",
                     help="exclude pairs whose IC50 is extrapolated beyond the tested range")
     a = ap.parse_args()
@@ -137,7 +143,7 @@ def main() -> None:
     if a.step == "harmonize":
         harmonize(cfg)
     else:
-        evaluate_cmd(cfg, a.wandb, include_extrapolated=not a.measured_only)
+        evaluate_cmd(cfg, a.wandb, include_extrapolated=not a.measured_only, target=a.target)
 
 
 if __name__ == "__main__":

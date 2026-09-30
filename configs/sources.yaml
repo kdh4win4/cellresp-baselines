@@ -1,7 +1,5 @@
-# Source files. URLs are best-known locations; VERIFY each against the portal
-# before the first run and record the exact release label you used.
-# If a URL fails (or is null), download manually into data/raw/ with the given
-# filename; the manifest step records checksums either way.
+# Raw sources. Files are downloaded manually into data/raw/ with the
+# filenames below; the manifest step records release, size and sha256.
 
 raw_dir: data/raw
 processed_dir: data/processed
@@ -10,24 +8,25 @@ results_dir: results
 
 sources:
   gdsc2_response:
-    release: "GDSC release 8.5"
-    url: "https://cog.sanger.ac.uk/cancerrxgene/GDSC_release8.5/GDSC2_fitted_dose_response_27Oct23.xlsx"
+    release: "GDSC release 8.5 (GDSC2_fitted_dose_response_27Oct23), via Cell Model Passports"
+    url: null
     filename: "GDSC2_fitted_dose_response.xlsx"
   gdsc_compounds:
-    release: "GDSC release 8.5"
-    url: "https://cog.sanger.ac.uk/cancerrxgene/GDSC_release8.5/screened_compounds_rel_8.5.csv"
+    release: "not downloaded"
+    url: null
     filename: "screened_compounds.csv"
+    optional: true
   depmap_model:
-    release: "DepMap Public (fill in, e.g. 25Q2)"
-    url: null            # download from depmap.org/portal/data_page
+    release: "DepMap Public current release, downloaded 2026-09-30"
+    url: null
     filename: "Model.csv"
   depmap_expression:
-    release: "DepMap Public (same release as Model.csv)"
-    url: null            # OmicsExpression ... ProteinCoding ... TPMLogp1 file
+    release: "DepMap Public current release, downloaded 2026-09-30 (OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv)"
+    url: null
     filename: "OmicsExpressionProteinCodingGenesTPMLogp1.csv"
   hgnc:
-    release: "HGNC complete set (date of download)"
-    url: "https://storage.googleapis.com/public-download-files/hgnc/tsv/tsv/hgnc_complete_set.txt"
+    release: "not downloaded"
+    url: null
     filename: "hgnc_complete_set.txt"
     optional: true
 
@@ -42,4 +41,5 @@ evaluate:
   seed: 0
   split_kinds: [random, unseen_drug, unseen_cell]
   min_group_size: 10         # min test rows for per-drug / per-cell correlation
-  additive_shrinkage: 0.0    # pseudo-count for cell effects in the additive baseline
+  additive_shrinkage: 0.0
+  # pseudo-count for cell effects in the additive baseline
