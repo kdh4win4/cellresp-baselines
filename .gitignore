@@ -8,3 +8,4 @@ wandb/
 __pycache__/
 *.egg-info/
 .pubchem_cache.json
+.DS_Store
