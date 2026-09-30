@@ -17,11 +17,11 @@ sources:
     filename: "screened_compounds.csv"
     optional: true
   depmap_model:
-    release: "DepMap Public 25Q2, downloaded 2026-09-30"
+    release: "DepMap Public 26Q1, downloaded 2026-09-30"
     url: null
     filename: "Model.csv"
   depmap_expression:
-    release: "DepMap Public 25Q2, downloaded 2026-09-30 (OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv)"
+    release: "DepMap Public 26Q1, downloaded 2026-09-30 (OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv)"
     url: null
     filename: "OmicsExpressionProteinCodingGenesTPMLogp1.csv"
   hgnc:

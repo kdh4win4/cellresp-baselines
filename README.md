@@ -75,7 +75,7 @@ pytest -q    # synthetic-data tests, no downloads needed
 
 Data: GDSC2 fitted dose response `27Oct23` (release 8.5, from Cell Model
 Passports); DepMap Public `Model.csv` and
-`OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv` (DepMap Public 25Q2,
+`OmicsExpressionTPMLogp1HumanProteinCodingGenes.csv` (DepMap Public 26Q1,
 downloaded 2026-09-30). Checksums in `data/raw/manifest.json`.
 
 ### Harmonization
